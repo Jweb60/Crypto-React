@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import GlobalChart from "./components/GlobalChart";
 import HeaderInfos from "./components/HeaderInfos";
 import Table from "./components/Table";
+import ToTop from "./components/ToTop";
 
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
         <GlobalChart coinsData={coinsData} />
       </header>
       <Table coinsData={coinsData}/>
+      <ToTop />
       
     </div>
   );
