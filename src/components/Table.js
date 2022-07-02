@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import TableLine from "./TableLine";
 import ToTop from "./ToTop";
 
 const Table = ({ coinsData }) => {
   const [rangeNumber, serRangeNumber] = useState(100);
   const [orderBy, setOrderBy] = useState("");
+  const showStable = useSelector((state) => state.stableReducer);
+  const showList = useSelector((state) => state.listReducer)
+
   const tableHeader = [
     "Prix",
     "MarketCap",
@@ -17,6 +21,34 @@ const Table = ({ coinsData }) => {
     "1a",
     "ATH",
   ];
+
+  const excludeCoin = (coin) => {
+    if (
+      coin === "usdt" ||
+      coin === "usdc" ||
+      coin === "busd" ||
+      coin === "dai" ||
+      coin === "ust" ||
+      coin === "mim" ||
+      coin === "tusd" ||
+      coin === "usdp" ||
+      coin === "usdn" ||
+      coin === "fei" ||
+      coin === "tribe" ||
+      coin === "gusd" ||
+      coin === "frax" ||
+      coin === "lusd" ||
+      coin === "husd" ||
+      coin === "ousd" ||
+      coin === "xsgd" ||
+      coin === "usdx" ||
+      coin === "eurs"
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   return (
     <div className="table-container">
@@ -63,6 +95,25 @@ const Table = ({ coinsData }) => {
       {coinsData &&
         coinsData
           .slice(0, rangeNumber)
+          .filter((coin) => {
+            if (showList) {
+              let list = window.localStorage.coinList.split(",");
+              if(list.includes(coin.id)){
+                return coin;
+              }
+            } else {
+              return coin;
+            }
+          })
+          .filter((coin) => {
+            if (showStable) {
+              return coin;
+            } else {
+              if (excludeCoin(coin.symbol)) {
+                return coin;
+              }
+            }
+          })
           .sort((a, b) => {
             switch (orderBy) {
               case "Prix":
@@ -78,36 +129,74 @@ const Table = ({ coinsData }) => {
               case "Volumereverse":
                 return a.total_volume - b.total_volume;
               case "1h":
-                return b.price_change_percentage_1h_in_currency - a.price_change_percentage_1h_in_currency;
+                return (
+                  b.price_change_percentage_1h_in_currency -
+                  a.price_change_percentage_1h_in_currency
+                );
               case "1hreverse":
-                return a.price_change_percentage_1h_in_currency - b.price_change_percentage_1h_in_currency;
+                return (
+                  a.price_change_percentage_1h_in_currency -
+                  b.price_change_percentage_1h_in_currency
+                );
               case "1j":
-                return b.price_change_percentage_24h_in_currency - a.price_change_percentage_24h_in_currency;
+                return (
+                  b.price_change_percentage_24h_in_currency -
+                  a.price_change_percentage_24h_in_currency
+                );
               case "1jreverse":
-                return a.price_change_percentage_24h_in_currency - b.price_change_percentage_24h_in_currency;
+                return (
+                  a.price_change_percentage_24h_in_currency -
+                  b.price_change_percentage_24h_in_currency
+                );
               case "1s":
-                return b.price_change_percentage_7d_in_currency - a.price_change_percentage_7d_in_currency;
+                return (
+                  b.price_change_percentage_7d_in_currency -
+                  a.price_change_percentage_7d_in_currency
+                );
               case "1sreverse":
-                return a.price_change_percentage_7d_in_currency - b.price_change_percentage_7d_in_currency;
+                return (
+                  a.price_change_percentage_7d_in_currency -
+                  b.price_change_percentage_7d_in_currency
+                );
               case "1m":
-                return b.price_change_percentage_30d_in_currency - a.price_change_percentage_30d_in_currency;
+                return (
+                  b.price_change_percentage_30d_in_currency -
+                  a.price_change_percentage_30d_in_currency
+                );
               case "1mreverse":
-                return a.price_change_percentage_30d_in_currency - b.price_change_percentage_30d_in_currency;
+                return (
+                  a.price_change_percentage_30d_in_currency -
+                  b.price_change_percentage_30d_in_currency
+                );
               case "6m":
-                return b.price_change_percentage_200d_in_currency - a.price_change_percentage_200d_in_currency;
+                return (
+                  b.price_change_percentage_200d_in_currency -
+                  a.price_change_percentage_200d_in_currency
+                );
               case "6mreverse":
-                return a.price_change_percentage_200d_in_currency - b.price_change_percentage_200d_in_currency;
+                return (
+                  a.price_change_percentage_200d_in_currency -
+                  b.price_change_percentage_200d_in_currency
+                );
               case "1a":
-                return b.price_change_percentage_1y_in_currency - a.price_change_percentage_1y_in_currency;
+                return (
+                  b.price_change_percentage_1y_in_currency -
+                  a.price_change_percentage_1y_in_currency
+                );
               case "1areverse":
-                return a.price_change_percentage_1y_in_currency - b.price_change_percentage_1y_in_currency;
+                return (
+                  a.price_change_percentage_1y_in_currency -
+                  b.price_change_percentage_1y_in_currency
+                );
               case "ATH":
                 return b.ath_change_percentage - a.ath_change_percentage;
               case "ATHreverse":
                 return a.ath_change_percentage - b.ath_change_percentage;
             }
           })
-          .map((coin, index) => <TableLine coin={coin} index={index} key={index} />)}
+          .map((coin, index) => (
+            <TableLine coin={coin} index={index} key={index} />
+          ))}
     </div>
   );
 };
